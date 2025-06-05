@@ -2,6 +2,21 @@ document.addEventListener("DOMContentLoaded", () => {
     const taskInput = document.getElementById("new-task");
     const addButton = document.getElementById("add-task");
     const taskList = document.getElementById("task-list");
+    const completedList = document.getElementById("completed-tasks");
+
+    function showToast(message, type = "info") {
+        const toast = document.createElement("div");
+        toast.textContent = message;
+        toast.className = "toast " + type;
+        document.body.appendChild(toast);
+        setTimeout(() => {
+            toast.classList.add("visible");
+        }, 10);
+        setTimeout(() => {
+            toast.classList.remove("visible");
+            setTimeout(() => document.body.removeChild(toast), 300);
+        }, 2500);
+    }
 
     function saveTasks(tasks) {
         localStorage.setItem("tasks", JSON.stringify(tasks));
@@ -9,7 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function createTaskElement(task, index) {
         const li = document.createElement("li");
-        li.className = "task-item" + (task.completed ? " completed" : "");
+        li.className = "task-item fade-in" + (task.completed ? " completed" : "");
 
         const span = document.createElement("span");
         span.textContent = task.text;
@@ -23,11 +38,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const toggleBtn = document.createElement("button");
         toggleBtn.textContent = task.completed ? "Annuler" : "Terminer";
-        toggleBtn.onclick = () => toggleTask(index);
+        toggleBtn.onclick = () => {
+            toggleTask(index);
+            showToast(task.completed ? "Tâche réactivée" : "Tâche terminée", "success");
+        };
 
         const deleteBtn = document.createElement("button");
         deleteBtn.textContent = "Supprimer";
-        deleteBtn.onclick = () => deleteTask(index);
+        deleteBtn.onclick = () => {
+            deleteTask(index);
+            showToast("Tâche supprimée", "error");
+        };
 
         const editBtn = document.createElement("button");
         editBtn.textContent = "Modifier";
@@ -49,6 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 tasks[index].text = newText;
                 saveTasks(tasks);
                 loadTasks();
+                showToast("Tâche modifiée", "success");
             }
         };
 
@@ -60,9 +82,14 @@ document.addEventListener("DOMContentLoaded", () => {
     function loadTasks() {
         const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
         taskList.innerHTML = "";
+        completedList.innerHTML = "";
         tasks.forEach((task, index) => {
             const taskElement = createTaskElement(task, index);
-            taskList.appendChild(taskElement);
+            if (task.completed) {
+                completedList.appendChild(taskElement);
+            } else {
+                taskList.appendChild(taskElement);
+            }
         });
     }
 
@@ -88,6 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
         saveTasks(tasks);
         taskInput.value = "";
         loadTasks();
+        showToast("Tâche ajoutée !", "info");
     });
 
     loadTasks();
