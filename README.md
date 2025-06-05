@@ -24,4 +24,14 @@ Ouvrir `index.html` dans un navigateur.
 docker build -t taskmaster .
 docker run -d -p 8080:80 taskmaster
 ```
+# TaskMaster
+
+Une application web simple de gestion de tâches personnelles (HTML/CSS/JS).
+
+## 🚀 Lancement avec Docker
+
+```bash
+docker build -t taskmaster-app .
+docker run -d -p 8080:80 taskmaster-app
+
 Accéder à l'application sur [http://localhost:8080](http://localhost:8080)
